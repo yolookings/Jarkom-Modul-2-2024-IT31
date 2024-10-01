@@ -8,3 +8,7 @@
 | Dzaky Faiq Fayyadhi  | 5027231047 |
 
 ## Write Up
+
+## Topologi Jaringan 1 - IT31
+
+![alt text](img/topologi-1.jpg)
