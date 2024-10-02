@@ -239,3 +239,133 @@ service bind9 restart
 ```
 
 ![alt text](/img/restart-bind9.png)
+
+## Soal 3
+
+Para pasukan juga perlu mengetahui mana titik yang akan diserang, sehingga dibutuhkan domain lain yaitu pasopati.xxxx.com dengan alias www.pasopati.xxxx.com yang mengarah ke Kotalingga.
+
+T31 > pasopati.it31.com | target > kotalingga
+
+Lakukan perintah pada Sriwijaya yang merupakan dns master
+
+```
+nano /etc/bind/named.conf.local
+```
+
+lalu sesuaikan pasopati.it31.com dengan syntax berikut:
+
+```
+zone "pasopati.it31.com" {
+	type master;
+	file "/etc/bind/it31/pasopati.it31.com";
+};
+```
+
+lalu setelah itu membuat folder tempat pasopati di /etc/bind :
+
+```
+mkdir /etc/bind/it31
+```
+
+dan copykan file db.local ke direktori tersebut :
+
+```
+cp /etc/bind/db.local /etc/bind/it31/pasopati.it31.com
+```
+
+lalu edit dan arahkan ke ip kotalingga > 192.232.1.6
+![alt text](/img/pasopati.png)
+
+lalu restart bind9
+
+```
+service bind9 restart
+```
+
+![alt text](/img/restart-bind9.png)
+
+## Soal 4
+
+Markas pusat meminta dibuatnya domain khusus untuk menaruh informasi persenjataan dan suplai yang tersebar. Informasi dan suplai meme terbaru tersebut mengarah ke Tanjungkulai dan domain yang ingin digunakan adalah rujapala.xxxx.com dengan alias www.rujapala.xxxx.com.
+
+T31 > rujapala.it31.com | target > kotalingga
+
+Lakukan perintah pada Sriwijaya yang merupakan dns master
+
+```
+nano /etc/bind/named.conf.local
+```
+
+lalu sesuaikan rujapala.it31.com dengan syntax berikut:
+
+```
+zone "rujapala.it31.com" {
+	type master;
+	file "/etc/bind/it31/rujapala.it31.com";
+};
+```
+
+lalu setelah itu membuat folder tempat rujapala di /etc/bind :
+
+```
+mkdir /etc/bind/it31
+```
+
+dan copykan file db.local ke direktori tersebut :
+
+```
+cp /etc/bind/db.local /etc/bind/it31/rujapala.it31.com
+```
+
+lalu edit dan arahkan ke ip kotalingga > 192.232.1.6
+![alt text](/img/rujapala.png)
+
+lalu restart bind9
+
+```
+service bind9 restart
+```
+
+![alt text](/img/restart-bind9.png)
+
+## Soal 5
+
+Pastikan domain-domain tersebut dapat diakses oleh seluruh komputer (client) yang berada di Nusantara.
+
+kita dapat mengecek dari komputer client, ambil contoh yakni pada client HayamWuruk, kita dapat mengecek nameserver terlebih dahulu
+
+```
+cat /etc/resolv.conf
+```
+
+lalu kita dapat menambahkan nameserver dari DNS master, yakni sriwijaya yang memiliki ip : 192.168.1.3.
+
+```
+echo nameserver 192.168.1.3 >> /etc/resolv.conf
+```
+
+![alt text](/img/cek-resolv.png)
+
+lalu setelah itu kita dapat melakuakn ping kepada semua domain.
+
+- untuk domain sudarsana
+
+```
+ping sudarsana.it31.com -c 4
+```
+
+- untuk domain pasopati
+
+```
+ping pasopati.it31.com -c 4
+```
+
+- untuk domain rujapala
+
+```
+ping rujapala.it31.com -c 4
+```
+
+sehingga akan menampilkan ping seperti berikut :
+
+![alt text](/img/cek-ping.png)
