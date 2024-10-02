@@ -142,3 +142,23 @@ iface eth0 inet static
 
 up echo nameserver 192.168.122.1 > /etc/resolv.conf
 ```
+
+lalu setelah semua konfigurasi selesai bisa kita tes dengan masuk ke web consolenya dan menginputkan command untuk melakukan ping sebagaimana seperti berikut :
+
+```
+ping google.com
+```
+
+jika masih belum dapat melakukan ping, maka kita perlu untuk mengecek /etc/resolv.conf
+
+```
+nano /etc/resolv.conf
+```
+
+dan perhatikan bahwasanya direktori /etc/resolv.conf terisi dengan nameserver seperti berikut:
+
+```
+nameserver 192.168.122.1 > /etc/resolv.conf
+```
+
+lalu coba untuk lakukan reload dan jalankan kembali ping.
