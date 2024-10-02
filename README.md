@@ -162,3 +162,68 @@ nameserver 192.168.122.1 > /etc/resolv.conf
 ```
 
 lalu coba untuk lakukan reload dan jalankan kembali ping.
+
+## Soal 1
+
+Untuk mempersiapkan peperangan World War MMXXIV (Iya sebanyak itu), Sriwijaya membuat dua kotanya menjadi web server yaitu Tanjungkulai, dan Bedahulu, serta Sriwijaya sendiri akan menjadi DNS Master. Kemudian karena merasa terdesak, Majapahit memberikan bantuan dan menjadikan kerajaannya (Majapahit) menjadi DNS Slave.
+
+berdasarkan topologi terlihat bahwasanya terdapat :
+
+- 3 client
+- 3 web server
+- 2 DNS (yang terdiri dari Master dan Slave)
+- 1 load balancer
+
+lalu terdapat pembagian seperti ini :
+
+router > nusantara
+DNS Master > Sriwijaya
+DNS Slave > Majapahit
+
+## Soal 2
+
+Karena para pasukan membutuhkan koordinasi untuk melancarkan serangannya, maka buatlah sebuah domain yang mengarah ke Solok dengan alamat sudarsana.xxxx.com dengan alias www.sudarsana.xxxx.com, dimana xxxx merupakan kode kelompok. Contoh: sudarsana.it01.com.
+
+IT31 > sudarsana.it31.com
+
+Lakukan perintah pada Sriwijaya yang merupakan dns master
+
+```
+nano /etc/bind/named.conf.local
+```
+
+lalu sesuaikan sudarsana.it31.com dengan syntax berikut:
+
+```
+zone "sudarsana.it31.com" {
+	type master;
+	file "/etc/bind/it31/sudarsana.it31.com";
+};
+```
+
+sehingga menjadi seperti pada gambar berikut :
+
+![alt text](/img/name-conf.png)
+
+lalu setelah itu membuat folder tempat sudarsana di /etc/bind :
+
+```
+mkdir /etc/bind/it31
+```
+
+dan copykan file db.local ke direktori tersebut :
+
+```
+cp /etc/bind/db.local /etc/bind/it31/sudarsana.it31.com
+```
+
+lalu edit dan arahkan ke ip solok > 192.232.2.2
+![alt text](/img/sudarsana.png)
+
+lalu restart bind9
+
+```
+service bind9 restart
+```
+
+![alt text](/img/restart-bind9.png)
