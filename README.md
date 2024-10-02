@@ -176,9 +176,21 @@ berdasarkan topologi terlihat bahwasanya terdapat :
 
 lalu terdapat pembagian seperti ini :
 
-router > nusantara
-DNS Master > Sriwijaya
-DNS Slave > Majapahit
+- router > nusantara
+- DNS Master > Sriwijaya
+- DNS Slave > Majapahit
+
+untuk menjadikan DNS server, lakukan instalasi bind (update dahulu sebelum mengisntal bind9)
+
+```
+ apt-get update
+```
+
+lalu install bind
+
+```
+ apt-get install bind9 -y
+```
 
 ## Soal 2
 
