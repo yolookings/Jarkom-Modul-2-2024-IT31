@@ -539,3 +539,151 @@ service bind9 restart
 4. kemudian lakukan ping pada `www.log` dan `log` it31.com
 
 ![alt text](/img/ping-log-panah.png)
+
+## Soal 11
+
+Setelah pertempuran mereda, warga IT dapat kembali mengakses jaringan luar dan menikmati meme brainrot terbaru, tetapi hanya warga Majapahit saja yang dapat mengakses jaringan luar secara langsung. Buatlah konfigurasi agar warga IT yang berada diluar Majapahit dapat mengakses jaringan luar melalui DNS Server Majapahit.
+
+1. lakukan konfigurasi pada `/etc/bind/named.conf.options`
+
+```
+nano /etc/bind/named.conf.options
+```
+
+2. pada DNS Majapahit tambahkan dns forwarder
+
+![alt text](/img/option-dns.png)
+
+3. kemudian lakukan restart bind9
+
+```
+service bind9 restart
+```
+
+4. kemudian pada client lakukan tes ping untuk memeriksa sambungan internet mereka :
+   ![alt text](/img/tes-client-internet.png)
+
+## Soal 12
+
+Karena pusat ingin sebuah laman web yang ingin digunakan untuk memantau kondisi kota lainnya maka deploy laman web ini (cek resource yg lb) pada Kotalingga menggunakan apache.
+
+1. setup dan konfugarasi apache terlebih dahulu pada kotalingga :
+
+```
+apt-get install update && apt-get install apache2 libapache2-mod-php7.0 php wget unzip -y
+```
+
+dari konfigurasi diatas untuk dapat melakukan :
+
+- install php, wget, unzip
+
+dan jangan lupa untuk menginstall lynx sebagai tempat testing nya
+
+```
+apt-get install lynx
+```
+
+2. lalu kita dapat melakukan konfigurasi pada apache2 mengikuti ketentuan dari modul :
+
+```
+cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/pasopati.it31.com.conf
+```
+
+3. kemudian lakukan config pada `/etc/apache2/sites-available/pasopati.it31.com.conf` sebagaimana sebagai gambar berikut:
+
+![alt text](/img/conf-lynx.png)
+
+4. setelah itu buat direktori untuk nantinya kira akan mengkonfigurasi file yang kita unduh pada soal shift
+
+```
+mkdir /var/www/pasopati.it31.com
+```
+
+5.  kemudian kita aktifkan (enable) konfigurasi web
+
+```
+a2ensite pasopati.it31.com.conf
+```
+
+6. lalu kita unduh file tersbeut ke direktori kita
+
+```
+wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1Sqf0TIiybYyUp5nyab4twy9svkgq8bi7' -O lb.zip
+```
+
+![alt text](/img/download-lb.png)
+
+7. kemudian di ekstrak
+
+```
+unzip lb.zip -d lb
+```
+
+8. kemudian pindahkan folder ke direktori `/var/www/pasopati.it31.`
+
+```
+mv lb/\* /var/www/pasopati.it31.com
+```
+
+9. kemudian pindah kan isi dari file yang berupa `index.php` ke direktori kita:
+
+```
+cp /var/www/pasopati.it31.com/worker/index.php /var/www/pasopati.it31.com/index.php
+```
+
+9. kemudian pindahkan ke folder `/var/www/html` dan lakukan testing menggunakan lynx
+
+```
+cp /var/www/pasopati.it31.com/index.php /var/www/html/index.php
+```
+
+10. jika masih belum bisa melakukan testing, maka kita harus menghapus file htmlnya terlebih dahulu
+
+```
+rm /var/www/html/index.html
+```
+
+untuk melakuakn testing dapat dengan cara pastikan lynx sudah terinstal dan jalankan `http://192.232.1.6/index.php` (ini ke kotalingga)
+
+![alt text](/img/testing-lynx.png)
+
+## Soal 13
+
+Karena Sriwijaya dan Majapahit memenangkan pertempuran ini dan memiliki banyak uang dari hasil penjarahan (sebanyak 35 juta, belum dipotong pajak) maka pusat meminta kita memasang load balancer untuk membagikan uangnya pada web nya, dengan Kotalingga, Bedahulu, Tanjungkulai sebagai worker dan Solok sebagai Load Balancer menggunakan apache sebagai web server nya dan load balancer nya.
+
+1. kita harus melakukan setup terlebih dahulu pada solok
+
+- dengan menggunakan apache2
+
+```
+apt-get update && apt-get install apache2 -y
+```
+
+2. untuk mengaktifkan konfigurasi ke sebuah konfigurasi apache2
+
+```
+a2enmod proxy
+a2enmod proxy_balancer
+a2enmod proxy_http
+a2enmod lbmethod_byrequests
+```
+
+3. kemudian kita lakukan konfigurasi apache di `/etc/apache2/sites-available/000-default.conf`
+
+![alt text](/img/conf-apache-13.png)
+
+4. lalu kemudian restart apache2
+
+```
+service apache2 restart
+```
+
+5. Lalu ulangi semua langkah dan lakukan config pada setiap web sesuai dengan nomor [Soal 12](#Soal-12)
+
+6. lakukan testing
+
+![alt text](/img/testing-tanjungkulai.png)
+
+![alt text](/img/testing-kotalingga.png)
+
+## Soal 14
