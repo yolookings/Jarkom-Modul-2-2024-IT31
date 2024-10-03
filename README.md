@@ -369,3 +369,173 @@ ping rujapala.it31.com -c 4
 sehingga akan menampilkan ping seperti berikut :
 
 ![alt text](/img/cek-ping.png)
+
+## Soal 6
+
+Beberapa daerah memiliki keterbatasan yang menyebabkan hanya dapat mengakses domain secara langsung melalui alamat IP domain tersebut. Karena daerah tersebut tidak diketahui secara spesifik, pastikan semua komputer (client) dapat mengakses domain pasopati.xxxx.com melalui alamat IP Kotalingga (Notes: menggunakan pointer record).
+
+1. kita dapat menambahkan pointer record yang terhubung dengan ip kotalingga
+
+```
+zone "1.232.192.in-addr.arpa" {
+  type slave;
+  masters{192.232.1.3;};
+  file "/var/lib/bind/1.232.192.in-addr.arpa"
+}
+```
+
+2. lalu setelah itu kita dapat membuat dns record, dengan cara mengcopy db.local ke domain kita :
+
+```
+cp /etc/bind/db.local /etc/bind/it31/1.232.192.in-addr.arpa
+```
+
+3. lalu edit dns record nya
+
+```
+
+```
+
+4. setelah itu restart bind9 nya
+
+```
+service bind9 restart
+```
+
+5. setelah itu test ptr dengan menjalankan host pada client
+   ![alt text](/img/test-ping-ptr.png)
+
+## Soal 7
+
+Akhir-akhir ini seringkali terjadi serangan brainrot ke DNS Server Utama, sebagai tindakan antisipasi kamu diperintahkan untuk membuat DNS Slave di Majapahit untuk semua domain yang sudah dibuat sebelumnya yang mengarah ke Sriwijaya.
+
+1. pada console sriwijaya kita dapat mengedit di bagian /etc/bind/named.conf.local
+
+```
+zone "sudarsana.it31.com" {
+  type slave;
+  masters{192.232.1.3;};
+  file "/var/lib/bind/sudarsana.it31.com"
+}
+
+zone "pasopati.it31.com" {
+  type slave;
+  masters{192.232.1.3;};
+  file "/var/lib/bind/pasopati.it31.com"
+}
+
+zone "rujapala.it31.com" {
+  type slave;
+  masters{192.232.1.3;};
+  file "/var/lib/bind/rujapala.it31.com"
+}
+
+zone "1.232.192.in-addr.arpa" {
+  type slave;
+  masters{192.232.1.3;};
+  file "/var/lib/bind/1.232.192.in-addr.arpa"
+}
+```
+
+2. lakukan restart pada bin9
+
+```
+service bind9 restart
+```
+
+3. kemudian pastikan sudah ada nameserver dari DNS server dan DNS Slave pada client
+
+4. kemudian pada console sriwijaya, matikan bind9 untuk kita melakukan pengetesan apakah bisa berjalan melalui DNS Slave
+
+```
+service bind9 stop
+```
+
+5. lalu setelah itu lakukan pengetesan ping pada client (terserah mau yang mana)
+
+![alt text](/img/test-ping-slave.png)
+
+6. lalu setelah itu nyalan kembali bind9 pada console sriwijaya
+
+```
+service bind9 start
+```
+
+## Soal 8
+
+Kamu juga diperintahkan untuk membuat subdomain khusus melacak kekuatan tersembunyi di Ohio dengan subdomain cakra.sudarsana.xxxx.com yang mengarah ke Bedahulu.
+
+1. masuk ke sriwijaya console, dan edit dns rec nya dengan menambahkan sub domain cakra di baris paling bawah
+
+![alt text](/img/cakra.png)
+
+2. lalu restart bind9 pada pada console sriwijaya
+
+```
+service bind9 restart
+```
+
+3. lalu masuk ke web consle client dan lakukan ping.cakra
+
+![alt text](/img/cakra.png)
+
+## Soal 9
+
+Karena terjadi serangan DDOS oleh shikanoko nokonoko koshitantan (NUN), sehingga sistem komunikasinya terhalang. Untuk melindungi warga, kita diperlukan untuk membuat sistem peringatan dari siren man oleh Frekuensi Freak dan memasukkannya ke subdomain panah.pasopati.xxxx.com dalam folder panah dan pastikan dapat diakses secara mudah dengan menambahkan alias www.panah.pasopati.xxxx.com dan mendelegasikan subdomain tersebut ke Majapahit dengan alamat IP menuju radar di Kotalingga.
+
+1. masuk ke console sriwijaya lalu pada `/etc/bind/it31/sudarsana.it31.com/` kita menggunakan domain pasopati dan menambahkan 2 baris yakni `www`dan`panah`lalu ,pada panah dan`ns1` buat ip yang menuju ke majapahit
+
+![alt text](/img/panah.png)
+
+2. edit konfigurasi pada `/etc/bind/named.conf.options` menjadi seperti berikut :
+
+![alt text](/img/options-panah.png)
+
+3. lalu lakukan restart pada bind
+
+```
+service bind9 restart
+```
+
+4. pada web console majapahit `/etc/bind/named.conf.options` , kita mengatur option dan juga `conf.local` nya
+
+   `opt`
+   ![alt text](/img/options-panah.png)
+   `local`
+   ![alt text](/img/zone-local-1.png)
+   ![alt text](/img/zone-local-2.png)
+
+5. lalu setelah itu buat direktori panah pada `/etc/bind/panah`, dan buat untuk menuju ke ip kotalingga
+
+![alt text](/img/panah-kotalingga.png)
+
+6. lakukan restart pada bind
+
+```
+service bind9 restart
+```
+
+7. lakukan tes ping pada subdomain panah
+   ![alt text](/img/ping-panah.png)
+
+## Soal 10
+
+Markas juga meminta catatan kapan saja meme brain rot akan dijatuhkan, maka buatlah subdomain baru di subdomain panah yaitu log.panah.pasopati.xxxx.com serta aliasnya www.log.panah.pasopati.xxxx.com yang juga mengarah ke Kotalingga.
+
+1. pada /etc/bind/named.conf.local tambahkan zone log.panah
+
+![alt text](/img/log-panah-local.png)
+
+2. cd majapahit `/etc/bind`, lalu tambahkan bagian subdomain `log`dan`www.log`
+
+![alt text](/img/log-panah.png)
+
+3. lakukan restart pada bind
+
+```
+service bind9 restart
+```
+
+4. kemudian lakukan ping pada `www.log` dan `log` it31.com
+
+![alt text](/img/ping-log-panah.png)
