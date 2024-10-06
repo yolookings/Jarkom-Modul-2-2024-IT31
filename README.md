@@ -7,7 +7,7 @@
 | Maulana Ahmad Zahiri | 5027231010 |
 | Dzaky Faiq Fayyadhi  | 5027231047 |
 
-## Write Up
+## Laporan Resmi Modul 2 Jarkom - IT31
 
 ## Topologi Jaringan 1 - IT31
 
@@ -781,11 +781,32 @@ service nginx restart
 
 test load balancer
 
-![alt text](/img/testing-tanjungkulai.png)
+![alt text](/img/tanjungkulai.png)
+
+![alt text](/img/kotalingga.png)
+
+![alt text](/img/bedahulu.png)
+
+![alt text](image.png)
 
 ## Soal 15
 
 Markas pusat meminta laporan hasil benchmark dengan menggunakan apache benchmark dari load balancer dengan 2 web server yang berbeda tersebut dan meminta secara detail dengan ketentuan:
+
+1. masuk ke web server solok
+
+2. kemudian lakukan benchmark load balancer apache2 menggunakan byrequest jadikan default`(ab -n 100 -c 10 http://127.0.0.1/)`
+   ![alt text](/img/byrequest.png)
+
+3. lalu atur konfigurasi untuk semua algoritma yang dipakai
+
+4. lalu cd `/etc/apache2/sites-available`
+   ![alt text](/img/algo.png)
+
+5. kemudian lakukan benchmark load balancer apache2 menggunakan bytraffic
+   ![alt text](/img/bytraffic.png)
+6. kemudian lakukan benchmark load balancer apache2 menggunakan bybusyness
+   ![alt text](/img/bybusyness.png)
 
 ## Soal 16
 
@@ -800,7 +821,9 @@ zone "solok.it31.com" {
 };
 ```
 
-2. kemudiian edit dns record kemudina copyr localnya dan menuju ke ip webserver `192.232.1.4`
+![alt text](/img/config-16.png)
+
+2. kemudiian edit dns record kemudina copy localnya yang domain awalnya sudarsana menjadi solok.it31.com dan menuju ke ip webserver `192.232.1.4`
 
 ```
 ;
@@ -826,18 +849,202 @@ www     IN      CNAME   solok.it31.com.
 service bind9 restart
 ```
 
+4. kemudian pada console solok, `/etc/apache2/sites-available`, dan copy `000-default.conf` `solok.it31.com.conf` , dan janganlupa untuk mengganti servernam dan server alias nya
+
+![alt text](/img/console-16.png)
+
+5. lalu `nano apache2.conf` dan tambahkan servername solok.it31.com
+
+![alt text](/img/apache2-solok.png)
+
+6. kemudina nonaktifkan konfigurasi website yang aktif `a2dissite 000-default.com`
+
+7. dan aktifkan konfigurasi untuk solok `a2ensite solok.it17.com`
+
+8. lakukan restart apache2
+
+```
+service apache2 restart
+```
+
+9. kemudian masuk ke web console client menggunakan ip `majapahit` dan `sriwijaya`
+
+![alt text](/img/console-web-16.png)
+
+10. kemudian lakukan testing `lynx` pada ketiga web server
+
+![alt text](/img/tanjungkulai.png)
+
+![alt text](/img/kotalingga.png)
+
+![alt text](/img/bedahulu.png)
+
 ## Soal 17
 
 Agar aman, buatlah konfigurasi agar solok.xxx.com hanya dapat diakses melalui port sebesar π x 10^4 = (phi nya desimal) dan 2000 + 2000 log 10 (10) +700 - π = ?.
+
+1. masuk ke web console solok, dan masuk ke `/etc/apache2`
+
+2. kemudian `nano ports.conf`dan tambahkan line `Listen` 22686 dan 31415 (sesuai perhitungan soal)
+
+![alt text](/img/listen.png)
+
+3. rm /var/www/html/\*
+
+4. kemudian edit konfigurasi virtualhostnya pada `nano sites-available` dan ganti sesuai dengna listen port nya yakni `22686 dan 31415`
+
+![alt text](/img/vh.png)
+
+5. lakukan restart apache2
+
+```
+service apache2 restart
+```
+
+6. kemudian pada client server lakuakn testing solok `lynx solok.it31.com`
+   ![alt text](/img/lynx-solo.png)
+
+7. lakukan testing lynx :
+
+- `lynx solok.it17.com:22686`
+  ![alt text](/img/kotalingga.png)
+
+- `lynx solok.it17.com:31415`
+  ![alt text](/img/bedahulu.png)
 
 ## Soal 18
 
 Apa bila ada yang mencoba mengakses IP solok akan secara otomatis dialihkan ke www.solok.xxxx.com.
 
+1. pada console solok masuk ke direktori `/etc/apache2/sites-available`, dan lakukan `nano redirect.conf`
+
+```
+<VirtualHost *:80>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        RewriteEngine On
+        RewriteRule ^(.*)$ http://solok.it17.com:4696/$1 [R=301,L]
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+
+2. kemudian aktifkan konfigurasi apache2 nya
+
+```
+a2enmod rewrite
+```
+
+3. kemudian aktifkan konfigurasi website nya
+
+```
+a2ensite redirect.conf
+```
+
+4. lakukan restart
+
+```
+service apache2 restart
+```
+
+5. kemudian pada web client
+   ![alt text](/img/client.png)
+
+6. kemudian lakuakn testing pada lynx dari IP solok `192.232.3.3`
+   ![alt text](/img/kotalingga.png)
+
 ## Soal 19
 
 Karena probset sudah kehabisan ide masuk ke salah satu worker buatkan akses direktori listing yang mengarah ke resource worker2.
 
+1. lakukan edit `/etc/bind/named.conf.local` tambahkan zone baru untuk sekiantterimakasih
+
+```
+zone "sekiantterimakasih.it31.com" {
+    type master;
+    file "/etc/bind/it31/sekiantterimakasih.it31.com";
+};
+```
+
+![alt text](/img/sekian.png)
+
+2. lakukan konfigurasi di `/etc/bind/it31/sekiantterimakasih.it31.com` untuk ke ip kotalingga
+
+```
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     sekiantterimakasih.it31.com. root.sekiantterimakasih.it31.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      sekiantterimakasih.it31.com.
+@       IN      A       10.67.1.5
+www     IN      CNAME   sekiantterimakasih.it31.com.
+```
+
+3. lakukan restart bind
+
+```
+service bind9 restart
+```
+
+4. dan juga tambahkan server untuk domain sekiantterimakasih di `/etc/nginx/sites-available/cakra.sudarsana.it31.com`
+
+```
+server {
+    listen 80;
+    server_name sekiantterimakasih.it31.com www.sekiantterimakasih.it31.com;
+
+    root /var/www/sekiantterimakasih.it31.com/dir-listing/worker2;
+    index index.php index.html index.htm;
+
+    location / {
+        autoindex on;
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+5. lalu untuk konfigurasi dirlistnya:
+
+- download file nya:
+
+```
+wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1JGk8b-tZgzAOnDqTx5B3F9qN6AyNs7Zy' -O dir-listing.zip
+```
+
+- lalu lakukan unzip :
+
+```
+unzip dir-listing.zip -d dir-listing
+```
+
+- lalu buat direktori tempatnya :
+
+```
+mkdir /var/www/sekiantterimakasih.it31.com
+```
+
+- lalu pindahkan ke direktori `/var/www` :
+
+```
+mv dir-listing/* /var/www/sekiantterimakasih.it31.com
+```
+
+6. terakhir tinggal restart nginx nya :
+
+```
+service nginx restart
+```
+
 ## Soal 20
 
 Worker tersebut harus dapat di akses dengan sekiantterimakasih.xxxx.com dengan alias www.sekiantterimakasih.xxxx.com.
+
+![alt text](/img/last-to-goal.png)
