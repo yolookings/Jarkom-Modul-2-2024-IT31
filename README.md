@@ -687,3 +687,157 @@ service apache2 restart
 ![alt text](/img/testing-kotalingga.png)
 
 ## Soal 14
+
+Selama melakukan penjarahan mereka melihat bagaimana web server luar negeri, hal ini membuat mereka iri, dengki, sirik dan ingin flexing sehingga meminta agar web server dan load balancer nya diubah menjadi nginx.
+
+1. pada web serever kita perlu untuk menginstall nginx dan php-fpm yang nantinya akan mensupport lynx
+
+```
+apt-get install nginx php-fpm -y
+```
+
+2. kemudian kita edit file config sesuai domain dari web server
+
+```
+server {
+    listen 80;
+
+    root /var/www/pasopati.it31.com;
+
+    index index.php index.html index.htm;
+    server_name _ pasopati.it31.com www.pasopati.it31.com;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # pass PHP scripts to FastCGI server
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
+
+3. lalu masukkan file tersebut ke `/etc/nginx/sites-available/domain`
+
+4. lalu clone ke direktori `sites-enabled` dan remove file default page nginx
+
+```
+ln -s /etc/nginx/sites-available/pasopati.it31.com /etc/nginx/sites-enabled/pasopati.it31.com
+rm /etc/nginx/sites-enabled/default
+```
+
+5. kemudian lakukan restart
+
+```
+service nginx restart
+service php7.0-fpm start
+```
+
+6. kemudian kita lakukan setting untuk load-balancer nya
+
+- pada solok kira install `nginx`
+
+  ```
+  apt-get install nginx -y
+  ```
+
+- kemudian edit config nginx, padda `/etc/nginx/sites-available/solok`
+
+  ```
+    upstream webserver  {
+        server 192.232.1.4;
+        server 192.232.1.5;
+        server 192.232.1.6;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+
+    location / {
+        proxy_pass http://webserver;
+    }
+  }
+  ```
+
+- kemudian lakukan link dengan `sites-enabled` lalu hapus config default nginx
+
+```
+ln -s /etc/nginx/sites-available/solok /etc/nginx/sites-enabled/solok
+rm /etc/nginx/sites-enabled/default
+```
+
+- terakhir lakukan restart pada nginx
+
+```
+service nginx restart
+```
+
+test load balancer
+
+![alt text](/img/testing-tanjungkulai.png)
+
+## Soal 15
+
+Markas pusat meminta laporan hasil benchmark dengan menggunakan apache benchmark dari load balancer dengan 2 web server yang berbeda tersebut dan meminta secara detail dengan ketentuan:
+
+## Soal 16
+
+Karena dirasa kurang aman dari brainrot karena masih memakai IP, markas ingin akses ke Solok memakai solok.xxxx.com dengan alias www.solok.xxxx.com (sesuai web server terbaik hasil analisis kalian). tanjungkulai
+
+1. pada DNS Master lakukan konfigurasi pada `/etc/bind/named.conf.local`
+
+```
+zone "solok.it31.com" {
+    type master;
+    file "/etc/bind/it31/solok.it31.com";
+};
+```
+
+2. kemudiian edit dns record kemudina copyr localnya dan menuju ke ip webserver `192.232.1.4`
+
+```
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     solok.it31.com. root.solok.it31.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      solok.it31.com.
+@       IN      A       10.67.1.4
+@       IN      AAAA    ::1
+www     IN      CNAME   solok.it31.com.
+```
+
+3. restart bind
+
+```
+service bind9 restart
+```
+
+## Soal 17
+
+Agar aman, buatlah konfigurasi agar solok.xxx.com hanya dapat diakses melalui port sebesar π x 10^4 = (phi nya desimal) dan 2000 + 2000 log 10 (10) +700 - π = ?.
+
+## Soal 18
+
+Apa bila ada yang mencoba mengakses IP solok akan secara otomatis dialihkan ke www.solok.xxxx.com.
+
+## Soal 19
+
+Karena probset sudah kehabisan ide masuk ke salah satu worker buatkan akses direktori listing yang mengarah ke resource worker2.
+
+## Soal 20
+
+Worker tersebut harus dapat di akses dengan sekiantterimakasih.xxxx.com dengan alias www.sekiantterimakasih.xxxx.com.
